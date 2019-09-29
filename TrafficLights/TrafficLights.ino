@@ -22,11 +22,11 @@ SOFTWARE.
 
 // Using an Arduino Uno
 
-const int gpioButton = 2;
-const int gpioInternalLed = 13;
-const int gpioLightGreen =  10;
-const int gpioLightYellow = 11;
-const int gpioLightRed = 12;
+const int GPIO_BUTTON = 2;
+const int GPIO_INTERNAL_LED = 13;
+const int GPIO_LIGHT_GREEN =  10;
+const int GPIO_LIGHT_YELLOW = 11;
+const int GPIO_LIGHT_RED = 12;
 
 const int DURATION_MAIN_LOOP = 100;
 
@@ -35,12 +35,12 @@ const int DURATION_REGULAR_GREEN = 25000;
 const int DURATION_REGULAR_YELLOW = 5000;
 const int DURATION_REGULAR_RED = 25000;
 
-const int lightOn = LOW;
-const int lightOff = HIGH;
-const int switchOn = LOW;
-const int switchOff = HIGH;
-const int internalLedOn = HIGH;
-const int internalLedOff = LOW;
+const int LIGHT_ON = LOW;
+const int LIGHT_OFF = HIGH;
+const int SWITCH_ON = LOW;
+const int SWITCH_OFF = HIGH;
+const int INTERNAL_LED_ON = HIGH;
+const int INTERNAL_LED_OFF = LOW;
 
 void operationAll();
 void operationBlink();
@@ -53,33 +53,33 @@ void (*operationTable[])() = {operationAll, operationRegular, operationBlink};
 
 
 void lightAll() {
-  digitalWrite(gpioLightGreen, lightOn);
-  digitalWrite(gpioLightYellow, lightOn);
-  digitalWrite(gpioLightRed, lightOn);
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_ON);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_ON);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_ON);
 }
 
 void lightNone() {
-  digitalWrite(gpioLightGreen, lightOff);
-  digitalWrite(gpioLightYellow, lightOff);
-  digitalWrite(gpioLightRed, lightOff);  
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_OFF);  
 }
 
 void lightGreen() {
-  digitalWrite(gpioLightGreen, lightOn);
-  digitalWrite(gpioLightYellow, lightOff);
-  digitalWrite(gpioLightRed, lightOff);  
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_ON);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_OFF);  
 }
 
 void lightYellow() {
-  digitalWrite(gpioLightGreen, lightOff);
-  digitalWrite(gpioLightYellow, lightOn);
-  digitalWrite(gpioLightRed, lightOff);  
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_ON);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_OFF);  
 }
 
 void lightRed() {
-  digitalWrite(gpioLightGreen, lightOff);
-  digitalWrite(gpioLightYellow, lightOff);
-  digitalWrite(gpioLightRed, lightOn);  
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_ON);  
 }
 
 
@@ -96,15 +96,15 @@ void operationNext() {
 
 
 void checkButton() {
-  static int previousValue = switchOff;
-  int buttonValue = digitalRead(gpioButton);
-  if (buttonValue == switchOff) {
-    digitalWrite(gpioInternalLed, internalLedOff);
+  static int previousValue = SWITCH_OFF;
+  int buttonValue = digitalRead(GPIO_BUTTON);
+  if (buttonValue == SWITCH_OFF) {
+    digitalWrite(GPIO_INTERNAL_LED, INTERNAL_LED_OFF);
     if (previousValue != buttonValue) {
       operationNext();
     }
   } else { // Button pushed
-    digitalWrite(gpioInternalLed, internalLedOn);
+    digitalWrite(GPIO_INTERNAL_LED, INTERNAL_LED_ON);
   }
   previousValue = buttonValue;
 }
@@ -208,14 +208,14 @@ void operationRegular() {
 
 
 void setup() {
-  pinMode(gpioButton,INPUT_PULLUP);
-  pinMode(gpioLightGreen, OUTPUT);
-  pinMode(gpioLightYellow, OUTPUT);
-  pinMode(gpioLightRed, OUTPUT);
-  pinMode(gpioInternalLed, OUTPUT);
-  digitalWrite(gpioLightGreen, lightOff);
-  digitalWrite(gpioLightYellow, lightOff);
-  digitalWrite(gpioLightRed, lightOff);
+  pinMode(GPIO_BUTTON,INPUT_PULLUP);
+  pinMode(GPIO_LIGHT_GREEN, OUTPUT);
+  pinMode(GPIO_LIGHT_YELLOW, OUTPUT);
+  pinMode(GPIO_LIGHT_RED, OUTPUT);
+  pinMode(GPIO_INTERNAL_LED, OUTPUT);
+  digitalWrite(GPIO_LIGHT_GREEN, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_OFF);
+  digitalWrite(GPIO_LIGHT_RED, LIGHT_OFF);
 }
 
 
