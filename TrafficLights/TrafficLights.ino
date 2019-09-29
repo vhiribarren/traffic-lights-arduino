@@ -19,7 +19,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
- 
+
+// Using an Arduino Uno
+
 const int gpioButton = 2;
 const int gpioInternalLed = 13;
 const int gpioLightGreen =  10;
@@ -28,13 +30,17 @@ const int gpioLightRed = 12;
 
 const int DURATION_MAIN_LOOP = 100;
 
-const int DURATION_BLINK = 2000;
-const int DURATION_REGULAR_GREEN = 20000;
+const int DURATION_BLINK = 1000;
+const int DURATION_REGULAR_GREEN = 25000;
 const int DURATION_REGULAR_YELLOW = 5000;
-const int DURATION_REGULAR_RED = 10000;
+const int DURATION_REGULAR_RED = 25000;
 
 const int lightOn = LOW;
 const int lightOff = HIGH;
+const int switchOn = LOW;
+const int switchOff = HIGH;
+const int internalLedOn = HIGH;
+const int internalLedOff = LOW;
 
 void operationAll();
 void operationBlink();
@@ -42,7 +48,7 @@ void operationRegular();
 
 int operationIndex = 0;
 const int OPERATION_TABLE_LEN = 3;
-void (*operationTable[])() = {operationAll, operationBlink, operationRegular};
+void (*operationTable[])() = {operationAll, operationRegular, operationBlink};
 
 
 void lightAll() {
@@ -76,30 +82,33 @@ void lightRed() {
 }
 
 
-void setup() {
-  pinMode(gpioButton,INPUT_PULLUP);
-  pinMode(gpioLightGreen, OUTPUT);
-  pinMode(gpioLightYellow, OUTPUT);
-  pinMode(gpioLightRed, OUTPUT);
-  pinMode(gpioInternalLed, OUTPUT);
-  digitalWrite(gpioLightGreen, lightOff);
-  digitalWrite(gpioLightYellow, lightOff);
-  digitalWrite(gpioLightRed, lightOff);
+void nextOperation() {
+  operationIndex = (operationIndex + 1) % OPERATION_TABLE_LEN;
 }
 
 
 void checkButton() {
-  static int previousValue = HIGH;
+  static int previousValue = switchOff;
   int buttonValue = digitalRead(gpioButton);
-  if (buttonValue == HIGH) { // Not pushed
-    digitalWrite(gpioInternalLed, LOW);
+  if (buttonValue == switchOff) {
+    digitalWrite(gpioInternalLed, internalLedOff);
     if (previousValue != buttonValue) {
-      operationIndex = (operationIndex + 1) % OPERATION_TABLE_LEN;
+      nextOperation();
     }
-  } else { // Pushed
-    digitalWrite(gpioInternalLed, HIGH);
+  } else { // Button pushed
+    digitalWrite(gpioInternalLed, internalLedOn);
   }
   previousValue = buttonValue;
+}
+
+
+void waitAndChangeState(unsigned long timeDuration, int newStateIfSuccess, unsigned long * timeRef,  int *currentState) {
+  unsigned long currentTime = millis();
+  unsigned long timeDelta = abs(currentTime - (*timeRef));
+  if (timeDelta > timeDuration) {
+    *timeRef = currentTime;
+    *currentState = newStateIfSuccess;
+  }
 }
 
 
@@ -114,20 +123,12 @@ void operationBlink() {
   switch(state) {
     case 0: {
       lightYellow();
-      unsigned long currentTime = millis();
-      if (abs(currentTime - timeRef) > DURATION_BLINK) {
-        timeRef = currentTime;
-        state = 1;
-      }
+      waitAndChangeState(DURATION_BLINK, 1, &timeRef, &state);
       break;
     }
     case 1: {
       lightNone();
-      unsigned long currentTime = millis();
-      if (abs(currentTime - timeRef) > DURATION_BLINK) {
-        timeRef = currentTime;
-        state = 0;
-      }
+      waitAndChangeState(DURATION_BLINK, 0, &timeRef, &state);
       break;
     }
   }
@@ -140,32 +141,32 @@ void operationRegular() {
   switch(state) {
     case 0: {
       lightGreen();
-      unsigned long currentTime = millis();
-      if (abs(currentTime - timeRef) > DURATION_REGULAR_GREEN) {
-        timeRef = currentTime;
-        state = 1;
-      }
+      waitAndChangeState(DURATION_REGULAR_GREEN, 1, &timeRef, &state);
       break;
     }
     case 1: {
       lightYellow();
-      unsigned long currentTime = millis();
-      if (abs(currentTime - timeRef) > DURATION_REGULAR_YELLOW) {
-        timeRef = currentTime;
-        state = 2;
-      }
+      waitAndChangeState(DURATION_REGULAR_YELLOW, 2, &timeRef, &state);
       break;
     }
     case 2: {
       lightRed();
-      unsigned long currentTime = millis();
-      if (abs(currentTime - timeRef) > DURATION_REGULAR_RED) {
-        timeRef = currentTime;
-        state = 0;
-      }
+      waitAndChangeState(DURATION_REGULAR_RED, 0, &timeRef, &state);
       break;
     }
   }
+}
+
+
+void setup() {
+  pinMode(gpioButton,INPUT_PULLUP);
+  pinMode(gpioLightGreen, OUTPUT);
+  pinMode(gpioLightYellow, OUTPUT);
+  pinMode(gpioLightRed, OUTPUT);
+  pinMode(gpioInternalLed, OUTPUT);
+  digitalWrite(gpioLightGreen, lightOff);
+  digitalWrite(gpioLightYellow, lightOff);
+  digitalWrite(gpioLightRed, lightOff);
 }
 
 
