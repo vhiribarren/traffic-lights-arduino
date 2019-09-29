@@ -47,6 +47,7 @@ void operationBlink();
 void operationRegular();
 
 int operationIndex = 0;
+bool operationReset = true;
 const int OPERATION_TABLE_LEN = 3;
 void (*operationTable[])() = {operationAll, operationRegular, operationBlink};
 
@@ -82,8 +83,15 @@ void lightRed() {
 }
 
 
-void nextOperation() {
+void operationApply() {
+  operationTable[operationIndex]();
+}
+
+void operationNext() {
   operationIndex = (operationIndex + 1) % OPERATION_TABLE_LEN;
+  operationReset = true;
+  operationApply();
+  operationReset = false;
 }
 
 
@@ -93,7 +101,7 @@ void checkButton() {
   if (buttonValue == switchOff) {
     digitalWrite(gpioInternalLed, internalLedOff);
     if (previousValue != buttonValue) {
-      nextOperation();
+      operationNext();
     }
   } else { // Button pushed
     digitalWrite(gpioInternalLed, internalLedOn);
@@ -113,21 +121,46 @@ void waitAndChangeState(unsigned long timeDuration, int newStateIfSuccess, unsig
 
 
 void operationAll() {
-  lightAll();
+  static int state = 0;
+  if (operationReset) {
+    state = 0;
+  }
+  switch(state) {
+    case 0: {
+      lightAll();
+      state = 1;
+      break;
+    }
+    case 1: {
+      break;
+    }
+  }
 }
 
 
 void operationBlink() {
   static int state = 0;
   static unsigned long timeRef = millis();
+  if (operationReset) {
+    state = 0;
+  }
   switch(state) {
     case 0: {
       lightYellow();
-      waitAndChangeState(DURATION_BLINK, 1, &timeRef, &state);
+      timeRef = millis();
+      state = 1;
       break;
     }
     case 1: {
+      waitAndChangeState(DURATION_BLINK, 2, &timeRef, &state);
+      break;
+    }
+    case 2: {
       lightNone();
+      state = 3;
+      break;
+    }
+    case 3: {
       waitAndChangeState(DURATION_BLINK, 0, &timeRef, &state);
       break;
     }
@@ -138,19 +171,35 @@ void operationBlink() {
 void operationRegular() {
   static int state = 0;
   static unsigned long timeRef = millis();
+  if (operationReset) {
+    state = 0;
+  }
   switch(state) {
     case 0: {
       lightGreen();
-      waitAndChangeState(DURATION_REGULAR_GREEN, 1, &timeRef, &state);
+      timeRef = millis();
+      state = 1;
       break;
     }
     case 1: {
-      lightYellow();
-      waitAndChangeState(DURATION_REGULAR_YELLOW, 2, &timeRef, &state);
+      waitAndChangeState(DURATION_REGULAR_GREEN, 2, &timeRef, &state);
       break;
     }
     case 2: {
+      lightYellow();
+      state = 3;
+      break;
+    }
+    case 3: {
+      waitAndChangeState(DURATION_REGULAR_YELLOW, 4, &timeRef, &state);
+      break;
+    }
+    case 4: {
       lightRed();
+      state = 5;
+      break;
+    }
+    case 5: {
       waitAndChangeState(DURATION_REGULAR_RED, 0, &timeRef, &state);
       break;
     }
@@ -171,7 +220,7 @@ void setup() {
 
 
 void loop() {
-  operationTable[operationIndex]();
+  operationApply();
   checkButton();
   delay(DURATION_MAIN_LOOP);
 }
