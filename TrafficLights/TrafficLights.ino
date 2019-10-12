@@ -22,6 +22,12 @@ SOFTWARE.
 
 // Using an Arduino Uno
 
+#define MODULE_MOSFET // Select MODULE_MOSFET or MODULE_RELAY
+
+#ifdef MODULE_RELAY
+#define INVERT_LIGHT_OUTPUT
+#endif
+
 const int GPIO_BUTTON = 2;
 const int GPIO_INTERNAL_LED = 13;
 const int GPIO_LIGHT_GREEN =  10;
@@ -35,8 +41,14 @@ const int DURATION_REGULAR_GREEN = 25000;
 const int DURATION_REGULAR_YELLOW = 5000;
 const int DURATION_REGULAR_RED = 25000;
 
+#ifndef INVERT_LIGHT_OUTPUT
+const int LIGHT_ON = HIGH;
+const int LIGHT_OFF = LOW;
+#else
 const int LIGHT_ON = LOW;
 const int LIGHT_OFF = HIGH;
+#endif
+
 const int SWITCH_ON = LOW;
 const int SWITCH_OFF = HIGH;
 const int INTERNAL_LED_ON = HIGH;
