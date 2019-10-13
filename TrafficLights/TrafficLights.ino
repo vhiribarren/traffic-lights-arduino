@@ -44,13 +44,13 @@ const int GPIO_LIGHT_YELLOW = 11;
 const int GPIO_LIGHT_RED = 12;
 const int GPIO_UNCONNECTED_RANDOM = 0;
 
-const unsigned long DURATION_MAIN_LOOP = 100L;         // in ms
-const unsigned long DURATION_REGULAR_BLINK = 1*1000L;  // in ms
-const unsigned long DURATION_REGULAR_GREEN = 60*1000L; // in ms
-const unsigned long DURATION_REGULAR_YELLOW = 5*1000L; // in ms
-const unsigned long DURATION_REGULAR_RED = 60*1000L;   // in ms
-const unsigned long DURATION_CATERPILLAR = 1*1000L;    // in ms
-const unsigned long DURATION_RANDOM = 5*60*1000L;      // in ms
+const unsigned long DURATION_MAIN_LOOP = 100L;           // in ms
+const unsigned long DURATION_REGULAR_GREEN = 5*60*1000L; // in ms
+const unsigned long DURATION_REGULAR_YELLOW = 5*1000L;   // in ms
+const unsigned long DURATION_REGULAR_RED = 5*60*1000L;   // in ms
+const unsigned long DURATION_REGULAR_BLINK = 1*1000L;    // in ms
+const unsigned long DURATION_CATERPILLAR = 1*1000L;      // in ms
+const unsigned long DURATION_RANDOM = 5*60*1000L;        // in ms
 
 #ifndef INVERT_LIGHT_OUTPUT
 const int LIGHT_ON = HIGH;
