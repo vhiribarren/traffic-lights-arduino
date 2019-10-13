@@ -51,6 +51,7 @@ const unsigned long DURATION_REGULAR_RED = 5*60*1000L;   // in ms
 const unsigned long DURATION_REGULAR_BLINK = 1*1000L;    // in ms
 const unsigned long DURATION_CATERPILLAR = 1*1000L;      // in ms
 const unsigned long DURATION_RANDOM = 5*60*1000L;        // in ms
+const unsigned long DURATION_RANDOM_QUICK = 2*1000L;     // in ms
 
 #ifndef INVERT_LIGHT_OUTPUT
 const int LIGHT_ON = HIGH;
@@ -382,12 +383,21 @@ void operationRandom() {
       long gpioToChange = selectRandomGpioLight();
       int currentValue =  digitalRead(gpioToChange);
       digitalWrite(gpioToChange, !currentValue);
+      // We do not want all light off, checking and remediation
+      int greenValue =  digitalRead(GPIO_LIGHT_GREEN);
+      int yellowValue =  digitalRead(GPIO_LIGHT_YELLOW);
+      int redValue =  digitalRead(GPIO_LIGHT_RED);
+      bool isAllLightsOff = (greenValue == LIGHT_OFF) && (yellowValue == LIGHT_OFF) && (redValue == LIGHT_OFF);
       timeRef = millis();
-      state = 1;
+      state = isAllLightsOff ? 2 : 1;
       break;
     }
     case 1: {
       waitAndChangeState(DURATION_RANDOM, 0, &timeRef, &state);
+      break;
+    }
+    case 2: {
+      waitAndChangeState(DURATION_RANDOM_QUICK, 0, &timeRef, &state);
       break;
     }
   }
