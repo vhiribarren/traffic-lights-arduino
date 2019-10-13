@@ -73,8 +73,8 @@ void operationCaterpillarSimple();
 void operationCaterpillarFilled();
 void operationRandom();
 
-int operationIndex = 0;
-bool operationReset = true;
+byte operationIndex = 0;
+bool operationReset = false;
 const int OPERATION_TABLE_LEN = 6;
 void (*operationTable[])() = {
   operationAll,
