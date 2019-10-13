@@ -31,6 +31,8 @@ SOFTWARE.
 // Main code
 ////////////
 
+#include <EEPROM.h>
+
 #ifdef MODULE_RELAY
 #define INVERT_LIGHT_OUTPUT
 #endif
@@ -62,6 +64,8 @@ const int SWITCH_OFF = HIGH;
 const int INTERNAL_LED_ON = HIGH;
 const int INTERNAL_LED_OFF = LOW;
 
+const int EPROM_ADDR_LAST_OPERATION = 0;
+
 void operationAll();
 void operationRegular();
 void operationRegularBlink();
@@ -78,6 +82,13 @@ void (*operationTable[])() = {
   operationCaterpillarSimple, operationCaterpillarFilled,
   operationRandom
 };
+void saveState() {
+  EEPROM.write(EPROM_ADDR_LAST_OPERATION, operationIndex);
+}
+void restoreState() {
+  byte lastOperationValue = EEPROM.read(EPROM_ADDR_LAST_OPERATION);
+  operationIndex = lastOperationValue < OPERATION_TABLE_LEN ? lastOperationValue : 0;
+}
 
 
 void lightAll() {
@@ -127,6 +138,7 @@ void operationNext() {
   operationReset = true;
   operationApply();
   operationReset = false;
+  saveState();
 }
 
 
@@ -392,6 +404,7 @@ void setup() {
   digitalWrite(GPIO_LIGHT_YELLOW, LIGHT_OFF);
   digitalWrite(GPIO_LIGHT_RED, LIGHT_OFF);
   randomSeed(analogRead(GPIO_UNCONNECTED_RANDOM));
+  restoreState();
 }
 
 
