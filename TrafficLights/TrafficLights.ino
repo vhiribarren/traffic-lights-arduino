@@ -352,7 +352,7 @@ void operationCaterpillarFilled() {
       break;
     }
     case 11: {
-      waitAndChangeState(DURATION_CATERPILLAR, 10, &timeRef, &state);
+      waitAndChangeState(DURATION_CATERPILLAR, 0, &timeRef, &state);
       break;
     }
   }
