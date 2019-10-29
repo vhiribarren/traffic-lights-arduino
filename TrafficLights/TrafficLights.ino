@@ -39,9 +39,9 @@ SOFTWARE.
 
 const int GPIO_BUTTON = 2;
 const int GPIO_INTERNAL_LED = 13;
-const int GPIO_LIGHT_GREEN =  10;
-const int GPIO_LIGHT_YELLOW = 11;
-const int GPIO_LIGHT_RED = 12;
+const int GPIO_LIGHT_GREEN =  9;
+const int GPIO_LIGHT_YELLOW = 10;
+const int GPIO_LIGHT_RED = 11;
 const int GPIO_UNCONNECTED_RANDOM = 0;
 
 const unsigned long DURATION_MAIN_LOOP = 100L;           // in ms
